@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "install": "npm install --legacy-peer-deps",
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
@@ -38,4 +39,12 @@
     "tailwindcss": "^3.4.6",
     "typescript": "^5.5.4"
   }
+  "overrides": {
+  "lucide-react": {
+    "react": "$react"
+  },
+  "@radix-ui/react-icons": {
+    "react": "$react"
+  }
+}
 }
