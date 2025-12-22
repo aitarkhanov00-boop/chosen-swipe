@@ -39,11 +39,12 @@
     "typescript": "^5.5.4"
   },
   "overrides": {
-    "lucide-react": {
-      "react": "$react"
-    },
-    "@radix-ui/react-icons": {
-      "react": "$react"
-    }
+  "lucide-react": {
+    "react": "$react",
+    "react-dom": "$react-dom"
+  },
+  "@radix-ui/react-*": {
+    "react": "$react"
   }
+}
 }
