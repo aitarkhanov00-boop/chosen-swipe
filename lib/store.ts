@@ -55,23 +55,7 @@ function initializeStore() {
   }
 }
 
-  // Загружаем данные из JSON, если файл существует
-  if (fs.existsSync(BOARDS_FILE)) {
-    try {
-      const fileContent = fs.readFileSync(BOARDS_FILE, 'utf-8');
-      const data = JSON.parse(fileContent);
-      
-      if (data.boards && Array.isArray(data.boards)) {
-        boards.push(...data.boards);
-      }
-      if (data.votes && Array.isArray(data.votes)) {
-        votes.push(...data.votes);
-      }
-    } catch (error) {
-      console.error('Error loading data from JSON:', error);
-    }
-  }
-}
+
 
 // Сохранение данных в JSON
 function saveToFile() {
