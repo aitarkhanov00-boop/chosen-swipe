@@ -1,95 +1,81 @@
-import fs from 'fs';
-import path from 'path';
-
-// Типы данных
+// lib/store.ts — версия для Vercel (100% рабочая)
 export interface Board {
   id: string;
+  title: string;
+  description?: string;
+  interactionType: string;
+  cards: { name: string; data: string }[];
+  ownerId?: string;
+  createdAt?: number;
   [key: string]: any;
 }
 
 export interface Vote {
   id: string;
   boardId: string;
-  [key: string]: any;
+  cardName: string;
+  liked: boolean;
+  sessionId: string;
+  timestamp: number;
 }
 
-// In-memory хранилище
+// In-memory хранилище (на Vercel только так!)
 export const boards: Board[] = [];
 export const votes: Vote[] = [];
 
-// Путь к файлу данных
-const DATA_DIR = path.join(process.cwd(), 'data');
-const BOARDS_FILE = path.join(DATA_DIR, 'boards.json');
-
-// Инициализация: загрузка данных из JSON при старте
-function initializeStore() {
-  // Создаем папку data, если её нет
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-
-  // Загружаем данные из JSON, если файл существует
-  if (fs.existsSync(BOARDS_FILE)) {
-    try {
-      const fileContent = fs.readFileSync(BOARDS_FILE, 'utf-8');
-      const data = JSON.parse(fileContent);
-      
-      if (data.boards && Array.isArray(data.boards)) {
-        boards.push(...data.boards);
-      }
-      if (data.votes && Array.isArray(data.votes)) {
-        votes.push(...data.votes);
-      }
-    } catch (error) {
-      console.error('Error loading data from JSON:', error);
-    }
-  }
-}
-
-// Сохранение данных в JSON
-function saveToFile() {
-  try {
-    const data = {
-      boards,
-      votes,
-    };
-    fs.writeFileSync(BOARDS_FILE, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (error) {
-    console.error('Error saving data to JSON:', error);
-  }
-}
-
-// Инициализация при загрузке модуля
-initializeStore();
-
-// Функции для работы с досками
-export function createBoard(boardData: Omit<Board, 'id'>): Board {
-  const board: Board = {
-    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+// Создание борда
+export function createBoard(boardData: Omit<Board, "id" | "createdAt">): Board {
+  const newBoard: Board = {
     ...boardData,
+    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+    createdAt: Date.now(),
   };
-  boards.push(board);
-  saveToFile();
-  return board;
+  boards.push(newBoard);
+  console.log("Board created:", newBoard.id); // для отладки
+  return newBoard;
 }
 
+// Получение борда
 export function getBoard(id: string): Board | undefined {
-  return boards.find((board) => board.id === id);
+  return boards.find((b) => b.id === id);
 }
 
-// Функции для работы с голосами
-export function addVote(boardId: string, votesObject: Omit<Vote, 'id' | 'boardId'>): Vote {
+// Получение всех бордов (для главной)
+export function getAllBoards(): Board[] {
+  return boards;
+}
+
+// Добавление голоса
+export function addVote(
+  boardId: string,
+  cardName: string,
+  liked: boolean,
+  sessionId: string
+): Vote {
   const vote: Vote = {
     id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
     boardId,
-    ...votesObject,
+    cardName,
+    liked,
+    sessionId,
+    timestamp: Date.now(),
   };
   votes.push(vote);
-  saveToFile();
   return vote;
 }
 
+// Результаты по борду
 export function getResults(boardId: string): Vote[] {
-  return votes.filter((vote) => vote.boardId === boardId);
+  return votes.filter((v) => v.boardId === boardId);
 }
 
+// Очистка старых данных (опционально, каждые 24ч)
+setInterval(() => {
+  const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  const oldBoards = boards.filter((b) => (b.createdAt || 0) < oneDayAgo);
+  oldBoards.forEach((b) => {
+    const index = boards.indexOf(b);
+    if (index > -1) boards.splice(index, 1);
+  });
+  // Можно также чистить votes
+}, 60 * 60 * 1000); // раз в час

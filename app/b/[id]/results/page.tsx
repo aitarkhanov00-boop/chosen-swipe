@@ -185,7 +185,7 @@ export default function ResultsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              You don't have permission to view these results. Only the board owner can access this page.
+              You don&apos;t have permission to view these results. Only the board owner can access this page.
             </p>
             <Button
               onClick={() => router.push("/")}
