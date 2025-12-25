@@ -126,22 +126,13 @@ function BoardCard({
   board: Board & { cardsCount: number; votesCount: number };
   toast: ReturnType<typeof useToast>["toast"];
 }) {
-  const handleShare = async () => {
-    try {
-      const url = `${window.location.origin}/b/${board.id}`;
-      await navigator.clipboard.writeText(url);
-      toast({
-        title: "Link copied!",
-        description: "Share this link with others to get votes",
-      });
-    } catch (error) {
-      console.error("Failed to copy:", error);
-      toast({
-        title: "Failed to copy",
-        description: "Please try again",
-        variant: "destructive",
-      });
-    }
+  const handleShare = () => {
+    const url = `${window.location.origin}/b/${board.id}`;
+    navigator.clipboard.writeText(url);
+    toast({
+      title: "Link copied!",
+      description: "Share this link with others to get votes",
+    });
   };
 
   return (

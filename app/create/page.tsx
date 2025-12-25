@@ -27,7 +27,7 @@ export default function CreateBoardPage() {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
-  const handleNext = async () => {
+  const handleNext = () => {
     if (step === 1) {
       if (!boardData.title.trim()) {
         alert("Please enter a title");
@@ -132,23 +132,14 @@ export default function CreateBoardPage() {
     ? `https://chosen-swipe.vercel.app/b/${boardId}`
     : "";
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(boardUrl);
-      setCopied(true);
-      toast({
-        title: "Link copied!",
-        description: "Share this link with others to get votes",
-      });
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error("Failed to copy:", error);
-      toast({
-        title: "Failed to copy",
-        description: "Please try again",
-        variant: "destructive",
-      });
-    }
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(boardUrl);
+    setCopied(true);
+    toast({
+      title: "Link copied!",
+      description: "Share this link with others to get votes",
+    });
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const shareOnWhatsApp = () => {
